@@ -1,0 +1,12 @@
+{% extends 'store/main.html' %}
+
+{% block content %}
+
+<h4>Welcome {{ customer.username }}</h4>
+
+<label><b>Email : </b></label> {{ customer.email }} <br>
+<label><b>FirstName : </b></label> {{ customer.first_name }} <br>
+<label><b>LastName : </b></label> {{ customer.last_name }} <br>
+
+
+{% endblock %}

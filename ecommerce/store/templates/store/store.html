@@ -1,0 +1,76 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<!-- Search by Product Name -->
+ <div class="filter">
+    <form method="GET" action="" class="form-inline" style="display: flex;margin-top: 10px;">
+        <input class="form-control mb-2 mr-sm-2" type="text" name="name" placeholder="Search by name..." id="name" value="{{ name_filter }}" style="width: 200px;">
+        <input class="form-control mb-2 mr-sm-2" type="number" name="min_price" placeholder="Min Price" value="{{ min_price }}" id="min" step="0.01" style="width: 200px;margin-left: 20px;">
+        <input  class="form-control mb-2 mr-sm-2" type="number" name="max_price" placeholder="Max Price" value="{{ max_price }}" id="max" step="0.01" style="width: 200px;margin-left: 20px;">
+
+        <button class="btn btn-primary mb-2" type="submit" style="margin-left: 20px;">Filter</button>
+    </form>
+</div>
+
+<br>
+<div class="row">
+    
+    {% for product in products  %}
+    <input type="hidden" value="{{product.id}}" id="pid">
+
+    <div class="col-lg-4">
+        <img 
+        class="thumbnail" src="{{ product.imageURL }}">
+        <div class="box-element product">
+            <h6><strong>{{product.name}}</strong></h6>
+            <hr>
+            <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+            <button 
+            class="btn btn-outline-success btn-sm btn-add-fav" data-product-id="{{ product.id }}"> <i class="fa fa-heart"></i> Add to Favorites </button>
+                    <h4 style="float: right;">${{product.price|floatformat:2}}</h4>
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // Add to Favorites Functionality
+    document.addEventListener("DOMContentLoaded", function () {
+        const favButtons = document.querySelectorAll(".btn-add-fav");
+
+        favButtons.forEach((button) => {
+            button.addEventListener("click", function () {
+                const productId = this.getAttribute("data-product-id");
+
+                fetch("{% url 'updateFavorite' %}", {
+                    method: "POST",
+                    credentials: 'same-origin',
+                        
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    body: JSON.stringify({ productId: productId }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        alert(data.status);
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                        alert("Something went wrong. Please try again.");
+                    });
+            });
+        });
+    });
+</script>
+
+
+
+{% endblock content %}
+
